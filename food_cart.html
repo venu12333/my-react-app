@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Catalog</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            margin: 20px;
+        }
+        .catalog {
+            flex: 2;
+            margin-right: 20px;
+            border-right: 1px solid #ccc;
+            padding-right: 20px;
+        }
+        .product-item {
+            border: 1px solid #eee;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .product-item img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+        .product-details {
+            flex-grow: 1;
+        }
+        .product-name {
+            font-weight: bold;
+        }
+        .product-price {
+            color: green;
+        }
+        .cart {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .cart h2 {
+            margin-top: 0;
+        }
+        .cart-item {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="catalog">
+        <h1>Product Catalog</h1>
+        <div id="product-list">
+            <!-- Products will be loaded here by JavaScript -->
+        </div>
+    </div>
+
+    <div class="cart">
+        <h2>Shopping Cart</h2>
+        <div id="cart-items">
+            <p>Your cart is empty.</p>
+            <!-- Cart items will be loaded here by JavaScript -->
+        </div>
+        <p>Total: <span id="cart-total">$0.00</span></p>
+    </div>
+
+    <script>
+        // Dummy product data
+        const products = [
+            { id: 1, name: "Apple", price: 0.50, imageUrl: "https://via.placeholder.com/50/FF0000/FFFFFF?text=A" },
+            { id: 2, name: "Banana", price: 0.30, imageUrl: "https://via.placeholder.com/50/FFFF00/000000?text=B" },
+            { id: 3, name: "Orange", price: 0.75, imageUrl: "https://via.placeholder.com/50/FFA500/000000?text=O" },
+            { id: 4, name: "Grapes", price: 1.20, imageUrl: "https://via.placeholder.com/50/800080/FFFFFF?text=G" }
+        ];
+
+        let cart = []; // Client-side shopping cart state
+
+        // Function to render the product catalog
+        function renderCatalog() {
+            const productListDiv = document.getElementById('product-list');
+            productListDiv.innerHTML = ''; // Clear existing products
+
+            products.forEach(product => {
+                const productElement = document.createElement('div');
+                productElement.classList.add('product-item');
+                productElement.innerHTML = `
+                    <img src="${product.imageUrl}" alt="${product.name}">
+                    <div class="product-details">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">$${product.price.toFixed(2)}</div>
+                    </div>
+                `;
+                // Add click event listener to add product to cart
+                productElement.addEventListener('click', () => {
+                    addToCart(product);
+                });
+                productListDiv.appendChild(productElement);
+            });
+        }
+
+        // Function to add a product to the cart
+        function addToCart(product) {
+            const existingItemIndex = cart.findIndex(item => item.id === product.id);
+
+            if (existingItemIndex > -1) {
+                // If item already in cart, increment quantity (or add as new line item if preferred)
+                // For this example, we'll add as a new line item to show distinct additions
+                cart.push({ ...product, cartId: Date.now() }); // Add unique identifier for display
+            } else {
+                // Add new item to cart
+                cart.push({ ...product, cartId: Date.now() }); // Add unique identifier for display
+            }
+            renderCart();
+        }
+
+        // Function to render the shopping cart
+        function renderCart() {
+            const cartItemsDiv = document.getElementById('cart-items');
+            const cartTotalSpan = document.getElementById('cart-total');
+
+            cartItemsDiv.innerHTML = ''; // Clear existing cart items
+
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
+            } else {
+                let total = 0;
+                cart.forEach(item => {
+                    const cartItemElement = document.createElement('div');
+                    cartItemElement.classList.add('cart-item');
+                    cartItemElement.innerHTML = `
+                        <div>${item.name} - $${item.price.toFixed(2)}</div>
+                    `;
+                    cartItemsDiv.appendChild(cartItemElement);
+                    total += item.price;
+                });
+                cartTotalSpan.textContent = `$${total.toFixed(2)}`;
+            }
+        }
+
+        // Initial rendering of catalog and cart
+        renderCatalog();
+        renderCart();
+    </script>
+</body>
+</html>
